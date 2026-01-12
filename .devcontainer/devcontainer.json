@@ -1,0 +1,15 @@
+{
+  "name": "BitcoinBank Devcontainer",
+  "dockerFile": "../docker/Dockerfile",
+  "workspaceFolder": "/home/dev/workspace",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    "ms-vscode.cpptools",
+    "vknabel.vscode-swift-developer-tools"
+  ],
+  "forwardPorts": [],
+  "postCreateCommand": "swift --version || true",
+  "remoteUser": "dev"
+}
