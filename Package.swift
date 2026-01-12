@@ -10,11 +10,9 @@ let package = Package(
         .library(name: "BitcoinBankApp", targets: ["App"]),
     ],
     dependencies: [
-        // Recommended secp256k1 Swift wrapper (uncomment to enable):
-        // .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", from: "0.1.0"),
-        // Example community alternative (uncomment to enable):
-        // .package(url: "https://github.com/awnumar/secp256k1.swift", from: "0.1.0"),
-        // When added, also link the product into the Wallet target dependencies (e.g. "secp256k1" or the product provided by the wrapper).
+        // Secp256k1 Swift wrapper (uncomment to enable). Common options:
+        .package(url: "https://github.com/awnumar/secp256k1.swift", from: "0.1.0"),
+        // Alternative: .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", from: "0.1.0"),
     ],
 
     targets: [
@@ -31,6 +29,10 @@ let package = Package(
         ),
         .target(
             name: "Wallet",
+            dependencies: [
+                // When the secp256k1 SPM package is enabled above, link the product below (module name may vary by package):
+                .product(name: "secp256k1", package: "secp256k1.swift", condition: .when(platforms: [.iOS]))
+            ],
             path: "Sources/Wallet"
         ),
         .target(
