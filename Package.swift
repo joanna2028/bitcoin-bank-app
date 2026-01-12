@@ -10,9 +10,10 @@ let package = Package(
         .library(name: "BitcoinBankApp", targets: ["App"]),
     ],
     dependencies: [
-        // Secp256k1 Swift wrapper (uncomment to enable). Common options:
-        .package(url: "https://github.com/awnumar/secp256k1.swift", from: "0.1.0"),
-        // Alternative: .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", from: "0.1.0"),
+        // NOTE: secp256k1 Swift wrapper disabled in CI to avoid network fetch issues in this environment.
+        // Uncomment one of the following package lines to enable a specific SPM wrapper for secp256k1.
+        // .package(url: "https://github.com/awnumar/secp256k1.swift", from: "0.1.0"),
+        // .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", from: "0.1.0"),
     ],
 
     targets: [
@@ -30,8 +31,7 @@ let package = Package(
         .target(
             name: "Wallet",
             dependencies: [
-                // When the secp256k1 SPM package is enabled above, link the product below (module name may vary by package):
-                .product(name: "secp256k1", package: "secp256k1.swift", condition: .when(platforms: [.iOS]))
+                // Add secp256k1 product here when an SPM wrapper has been enabled in dependencies
             ],
             path: "Sources/Wallet"
         ),
