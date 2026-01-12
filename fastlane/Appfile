@@ -1,0 +1,3 @@
+app_identifier("com.example.bitcoinbank") # Replace with your app bundle id
+apple_id("jsmith_life@proton.me") # Apple ID provided by user
+team_id("YOUR_TEAM_ID") # Optional: replace with your Apple Developer Team ID

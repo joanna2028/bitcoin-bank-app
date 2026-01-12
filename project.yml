@@ -1,0 +1,18 @@
+name: BitcoinBankApp
+
+options:
+  bundleIdPrefix: com.example
+
+targets:
+  BitcoinBankApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    info: Sources/App/Info.plist
+    sources:
+      - Sources/App
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.example.bitcoinbank
+      SWIFT_VERSION: 5.9
+    scheme:
+      testTargets: []
