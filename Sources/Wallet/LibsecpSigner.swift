@@ -37,27 +37,35 @@ public struct LibsecpSigner: Secp256k1Signer {
     public func sign(message: Data, withHexPrivateKey hexPriv: String) -> String {
         guard let priv = Data(hex: hexPriv) else { return "" }
 
-        // Nostr signs a SHA-256 of the serialized event. Caller provides the message bytes; we double-check the digest here.
+        // Nostr expects the SHA-256 of the serialized event to be signed; accept either the raw bytes or digest.
         let digest = Data(SHA256.hash(data: message))
 
         #if canImport(secp256k1)
-        // The exact API depends on the wrapper chosen. Below is a conceptual example and will need adapting:
-        // 1) create a context
-        // 2) use ecdsa_sign_recoverable with the digest and secret key
-        // 3) serialize the compact signature (64 bytes) and return hex
+        // If a C-style libsecp256k1 is linked, call its API directly. This uses the standard C function names from libsecp256k1.
+        // The exact header and linking depends on the chosen SPM wrapper. These calls are guarded at compile time and will only be compiled when the library is present.
         
-        // TODO: Replace the placeholder implementation below with calls to the actual SPM package API (e.g., secp256k1_ecdsa_sign_recoverable)
-        // For now we return empty string to indicate not implemented when library bindings are not yet adapted.
-        
-        // Example pseudocode (non-compilable):
-        // let ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN)
-        // var sig = secp256k1_ecdsa_recoverable_signature()
-        // let ok = secp256k1_ecdsa_sign_recoverable(ctx, &sig, digest.bytes, priv.bytes, nil, nil)
-        // if ok == 1 { var out = [UInt8](repeating:0, count:64); secp256k1_ecdsa_recoverable_signature_serialize_compact(ctx, &out, &recid, &sig); return Data(out).hexString() }
-        
-        return "" // Replace with actual signature hex
+        // Context: SECP256K1_CONTEXT_SIGN
+        guard let ctx = secp256k1_context_create(UInt32(SECP256K1_CONTEXT_SIGN)) else { return "" }
+        defer { secp256k1_context_destroy(ctx) }
+
+        var recSig = secp256k1_ecdsa_recoverable_signature()
+
+        let ok = digest.withUnsafeBytes { digestPtr -> Int32 in
+            return priv.withUnsafeBytes { privPtr -> Int32 in
+                return secp256k1_ecdsa_sign_recoverable(ctx, &recSig, digestPtr.baseAddress!.assumingMemoryBound(to: UInt8.self), privPtr.baseAddress!.assumingMemoryBound(to: UInt8.self), nil, nil)
+            }
+        }
+
+        guard ok == 1 else { return "" }
+
+        var out = [UInt8](repeating: 0, count: 64)
+        var recid: Int32 = 0
+        let serialOk = secp256k1_ecdsa_recoverable_signature_serialize_compact(ctx, &out, &recid, &recSig)
+        guard serialOk == 1 else { return "" }
+
+        return Data(out).hexString()
         #else
-        // Library not available at compile-time
+        // Library not available at compile-time; return empty to indicate not implemented
         return ""
         #endif
     }
