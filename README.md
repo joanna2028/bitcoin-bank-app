@@ -31,6 +31,10 @@ Linux quick build & test (dev container or local):
 
 If you do not enable the secp256k1 SPM package, the `LibsecpSigner` will compile but return empty signatures; tests that require the library will be skipped.
 
+iOS / TestFlight:
+- To build an iOS app, generate an Xcode project from the included XcodeGen spec: `brew install xcodegen && ./scripts/generate_xcodeproj.sh`.
+- Provide an App Store Connect API Key (`fastlane/ApiKey.json`) and set your bundle id in `fastlane/Appfile` then run `fastlane beta` to upload to TestFlight.
+
 Security:
 - Keep your seed phrase private and backed up.
 - Prefer Secure Enclave-backed key storage where available.
