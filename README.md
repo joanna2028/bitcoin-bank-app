@@ -1,9 +1,6 @@
 # bitcoin-bank-app
 new world economy
 
-# bitcoin-bank-app
-new world economy
-
 
 # Bitcoin Bank  
 ( Nostr Bitcoin Bank Interactive artifact )
